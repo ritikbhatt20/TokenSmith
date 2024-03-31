@@ -1,0 +1,4 @@
+1- Create a token and account to hold that
+2- Mint tokens to an account
+3- See the supply of the token
+4- Send tokens to phantom wallet
