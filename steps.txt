@@ -2,3 +2,8 @@
 2- Mint tokens to an account
 3- See the supply of the token
 4- Send tokens to phantom wallet
+
+For Nft
+1- Create a new NFT and account to hold that
+2- Mint a new NFT
+2- Restrict Minting of NFT

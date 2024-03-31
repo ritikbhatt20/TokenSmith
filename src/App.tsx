@@ -1,4 +1,5 @@
 import './App.css';
+import MintNft from './components/MintNft';
 import MintToken from './components/MintToken';
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <MintToken/>
+        <MintNft/>
       </header>
     </div>
   );
