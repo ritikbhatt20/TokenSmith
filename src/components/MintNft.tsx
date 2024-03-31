@@ -56,12 +56,25 @@ function MintNft() {
     console.log(`Created NFT holding Account: ${fromTokenAccount.address.toBase58()}`);
   }
 
+  async function mintNft() {
+    // Mint 1 token(NFT) to the TokenAccount that we have created
+    const signature = await mintTo(
+        connection,                                         
+        fromWallet,
+        mint,                                               
+        fromTokenAccount.address,
+        fromWallet.publicKey,
+        1
+      );
+      console.log(`Mint NFT Signature: ${signature}`);
+  }
+
   return (
     <div style={{ marginTop: 50 }}>
       Mint NFT Section
       <div>
         <button onClick={createNft}>Create NFT</button>
-        <button>Mint NFT</button>
+        <button onClick={mintNft}>Mint NFT</button>
         <button>Lock NFT</button>
       </div>
     </div>
