@@ -4,6 +4,8 @@ import {
   PublicKey,
   Keypair,
   LAMPORTS_PER_SOL,
+  Transaction,
+  sendAndConfirmTransaction
 } from "@solana/web3.js";
 
 import {
@@ -14,6 +16,8 @@ import {
   Account,
   getMint,
   getAccount,
+  createSetAuthorityInstruction,
+  AuthorityType
 } from "@solana/spl-token";
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
@@ -69,13 +73,27 @@ function MintNft() {
       console.log(`Mint NFT Signature: ${signature}`);
   }
 
+  async function lockNft() {
+    // Create our transaction to change minting permissions
+    let transaction = new Transaction().add(createSetAuthorityInstruction(
+        mint,
+        fromWallet.publicKey,
+        AuthorityType.MintTokens,
+        null
+    ));
+
+    //Send Transaction
+    const signature = await sendAndConfirmTransaction(connection, transaction, [fromWallet]);
+    console.log(`Lock Signature: ${signature}`);
+  }
+
   return (
     <div style={{ marginTop: 50 }}>
       Mint NFT Section
       <div>
         <button onClick={createNft}>Create NFT</button>
         <button onClick={mintNft}>Mint NFT</button>
-        <button>Lock NFT</button>
+        <button onClick={lockNft}>Lock NFT</button>
       </div>
     </div>
   );
