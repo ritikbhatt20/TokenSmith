@@ -27,6 +27,7 @@ function MintToken() {
 
   // Generate a new wallet keypair and airdrop SOL
   const fromWallet = Keypair.generate();
+  const toWallet = new PublicKey("G2k6ShTNEyJo84Gu6Dey6ubKagaFQzjBxffncNtPJuqR");
 
   let mint: PublicKey;
   let fromTokenAccount: Account;
@@ -64,7 +65,7 @@ function MintToken() {
       mint,                                               
       fromTokenAccount.address,
       fromWallet.publicKey,
-      1000000000
+      10000000000
     );
     console.log(`Mint Signature: ${signature}`);
   }
@@ -85,7 +86,20 @@ function MintToken() {
     console.log(tokenAccountInfo.amount);
   }
 
-  
+  async function sendToken() {
+    // Get the token account of the toWallet address, and if it does not exist, create it
+    const toTokenAccount = await getOrCreateAssociatedTokenAccount(connection, fromWallet, mint, toWallet);
+
+    const signature = await transfer(
+      connection,
+      fromWallet,
+      fromTokenAccount.address,
+      toTokenAccount.address,
+      fromWallet.publicKey,
+      1000000000
+    );
+    console.log(`Finished transfer with ${signature}`);
+  }
 
   return (
     <div>
@@ -94,7 +108,7 @@ function MintToken() {
         <button onClick={createToken}>Create Token</button>
         <button onClick={mintToken}>Mint Token</button>
         <button onClick={checkBalance}>Check Balance</button>
-        <button>Send Token</button>
+        <button onClick={sendToken}>Send Token</button>
       </div>
     </div>
   );
