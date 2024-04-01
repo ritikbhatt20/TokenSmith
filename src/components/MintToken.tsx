@@ -1,6 +1,5 @@
 import { 
   clusterApiUrl,
-  Connection,
   PublicKey,
   Keypair,
   LAMPORTS_PER_SOL
@@ -16,31 +15,42 @@ import {
   getAccount
 } from "@solana/spl-token";
 
+import { AnchorWallet, useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { publicKey } from "@project-serum/anchor/dist/cjs/utils";
+
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
 function MintToken() {
 
-  const connection = new Connection(
-    clusterApiUrl('devnet'),
-    'confirmed'
-  );
-
+  // const connection = new Connection(
+  //   clusterApiUrl('devnet'),
+  //   'confirmed'
+  // );
+  const { connection } = useConnection()
+  const wallet = useAnchorWallet()
   // Generate a new wallet keypair and airdrop SOL
   const fromWallet = Keypair.generate();
   const toWallet = new PublicKey("G2k6ShTNEyJo84Gu6Dey6ubKagaFQzjBxffncNtPJuqR");
-
   let mint: PublicKey;
   let fromTokenAccount: Account;
 
   async function createToken() {
+    // const publicKey = await fromWallet?.publicKey;
     const fromAirdropSignature = await connection.requestAirdrop(fromWallet.publicKey, LAMPORTS_PER_SOL);
     await connection.confirmTransaction(fromAirdropSignature);
+
+    let  publicKey = wallet?.publicKey;
+    if (!publicKey) {
+      // Handle the case where fromWallet is undefined or does not have a publicKey
+      console.error("fromWallet is undefined or does not have a publicKey");
+      return; // Or throw an error, return an error message, etc.
+    }
     
     // Create new token mint
     mint = await createMint(
       connection,
       fromWallet,
-      fromWallet.publicKey,
+      publicKey,
       null, 
       9
     );
@@ -51,20 +61,26 @@ function MintToken() {
       connection,
       fromWallet,
       mint,
-      fromWallet.publicKey
+      publicKey
     );
 
     console.log(`Created Token Account: ${fromTokenAccount.address.toBase58()}`);
   }
 
   async function mintToken() {
+    let publicKey = wallet?.publicKey;
+    if (!publicKey) {
+      // Handle the case where fromWallet is undefined or does not have a publicKey
+      console.error("fromWallet is undefined or does not have a publicKey");
+      return; // Or throw an error, return an error message, etc.
+    }
     // Mint 1 token to the "fromTokenAccount" account we just created
     const signature = await mintTo(
       connection,                                         
       fromWallet,
       mint,                                               
       fromTokenAccount.address,
-      fromWallet.publicKey,
+      publicKey,
       10000000000
     );
     console.log(`Mint Signature: ${signature}`);
